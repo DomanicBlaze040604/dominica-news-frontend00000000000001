@@ -8,10 +8,10 @@ import { TestConnection } from '../../components/TestConnection';
 import { FileText, FolderOpen, Image, TrendingUp } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
-  // Fetch dashboard statistics using public endpoints
+  // Fetch dashboard statistics using admin endpoints
   const { data: articlesData } = useQuery({
-    queryKey: ['articles', { page: 1, limit: 1 }],
-    queryFn: () => articlesService.getPublishedArticles({ page: 1, limit: 1 }),
+    queryKey: ['admin-articles', { page: 1, limit: 1 }],
+    queryFn: () => articlesService.getAdminArticles({ page: 1, limit: 1 }),
   });
 
   const { data: categoriesData } = useQuery({
@@ -19,11 +19,15 @@ export const AdminDashboard: React.FC = () => {
     queryFn: categoriesService.getCategories,
   });
 
-  // For now, we'll skip images since the endpoint doesn't exist
-  const imagesData = { data: { pagination: { totalImages: 0 } } };
+  const { data: imagesData } = useQuery({
+    queryKey: ['admin-images', { page: 1, limit: 1 }],
+    queryFn: () => imagesService.getImages({ page: 1, limit: 1 }),
+  });
 
-  // Use the same articles data for published count
-  const publishedArticlesData = articlesData;
+  const { data: publishedArticlesData } = useQuery({
+    queryKey: ['admin-articles', { page: 1, limit: 1, status: 'published' }],
+    queryFn: () => articlesService.getAdminArticles({ page: 1, limit: 1, status: 'published' }),
+  });
 
   const stats = [
     {
@@ -52,7 +56,7 @@ export const AdminDashboard: React.FC = () => {
     },
     {
       title: 'Images',
-      value: 0, // Images endpoint not available yet
+      value: imagesData?.data?.pagination?.totalImages || 0,
       description: 'Uploaded media files',
       icon: Image,
       color: 'text-orange-600',
