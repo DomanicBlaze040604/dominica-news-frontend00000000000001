@@ -82,7 +82,7 @@ const FeaturedSectionCards = ({ articles, isLoading }: FeaturedSectionCardsProps
                 />
                 <div className="absolute top-4 left-4 animate-scale-in" style={{ animationDelay: `${100 * (index + 1) + 200}ms` }}>
                   <Badge className="bg-primary text-primary-foreground shadow-md">
-                    {article.category.name}
+                    {article.category?.name || 'Uncategorized'}
                   </Badge>
                 </div>
                 {/* Overlay gradient on hover */}
@@ -103,10 +103,10 @@ const FeaturedSectionCards = ({ articles, isLoading }: FeaturedSectionCardsProps
                   <div className="flex items-center gap-2 mb-1">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <p className="author-name text-foreground">
-                      {article.author.name}
+                      {article.author?.name || 'Unknown Author'}
                     </p>
                   </div>
-                  {article.author.role && (
+                  {article.author?.role && (
                     <p className="author-role ml-6">
                       {article.author.role}
                     </p>

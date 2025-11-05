@@ -155,7 +155,7 @@ export const CategoryDropdown = ({ categorySlug, categoryName, isActive }: Categ
                         {article.title}
                       </h4>
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        {article.author && (
+                        {article.author?.name && (
                           <div className="flex items-center gap-1">
                             <User className="h-3 w-3" />
                             <span className="truncate max-w-20">{article.author.name}</span>

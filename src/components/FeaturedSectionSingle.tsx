@@ -71,7 +71,7 @@ const FeaturedSectionSingle = ({ articles, isLoading }: FeaturedSectionSinglePro
           />
           <div className="absolute top-4 left-4 animate-scale-in" style={{ animationDelay: '200ms' }}>
             <Badge className="bg-primary text-primary-foreground shadow-md">
-              {featuredArticle.category.name}
+              {featuredArticle.category?.name || 'Uncategorized'}
             </Badge>
           </div>
           {/* Overlay gradient on hover */}
@@ -92,7 +92,7 @@ const FeaturedSectionSingle = ({ articles, isLoading }: FeaturedSectionSinglePro
             <div className="flex items-center gap-3 mb-2">
               <User className="h-5 w-5 text-muted-foreground" />
               <p className="author-name text-lg text-foreground">
-                {featuredArticle.author.name}
+                {featuredArticle.author?.name || 'Unknown Author'}
               </p>
             </div>
             {featuredArticle.author.role && (
