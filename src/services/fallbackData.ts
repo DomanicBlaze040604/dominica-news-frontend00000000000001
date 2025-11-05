@@ -71,17 +71,78 @@ const mockAuthors: Author[] = [
 const mockArticles: Article[] = [
   {
     id: '1',
-    title: 'Sample Article Title',
-    slug: 'sample-article-title',
-    excerpt: 'This is a sample article excerpt for testing purposes.',
-    content: '<p>This is sample article content.</p>',
-    category: mockCategories[0],
+    title: 'Breaking: New Infrastructure Development Announced for Dominica',
+    slug: 'new-infrastructure-development-announced-dominica',
+    excerpt: 'The government has announced a major infrastructure development project that will improve roads and bridges across the island.',
+    content: '<p>In a significant announcement today, the Dominican government revealed plans for a comprehensive infrastructure development project...</p><p>This initiative will focus on improving transportation networks, upgrading existing roads, and constructing new bridges to enhance connectivity across the island.</p>',
+    category: mockCategories[0], // Politics
     author: mockAuthors[0],
     status: 'published',
-    publishedAt: new Date().toISOString(),
+    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    isPinned: true,
+    featuredImage: '/api/placeholder/800/400',
+    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '2',
+    title: 'Local Cricket Team Wins Regional Championship',
+    slug: 'local-cricket-team-wins-regional-championship',
+    excerpt: 'The Dominica national cricket team secured victory in the Caribbean regional championship with an outstanding performance.',
+    content: '<p>The Dominica national cricket team made history yesterday by winning the Caribbean regional championship...</p><p>The team showed exceptional skill and determination throughout the tournament, culminating in a thrilling final match.</p>',
+    category: mockCategories[1], // Sports
+    author: mockAuthors[1],
+    status: 'published',
+    publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
     isPinned: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    featuredImage: '/api/placeholder/800/400',
+    createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '3',
+    title: 'Hurricane Season Preparedness: Essential Tips for Residents',
+    slug: 'hurricane-season-preparedness-essential-tips',
+    excerpt: 'As hurricane season approaches, local authorities provide crucial safety guidelines and preparation tips for all residents.',
+    content: '<p>With the Atlantic hurricane season officially underway, Dominican authorities are urging residents to prepare...</p><p>Key preparation steps include securing emergency supplies, creating evacuation plans, and staying informed about weather updates.</p>',
+    category: mockCategories[2], // Weather
+    author: mockAuthors[0],
+    status: 'published',
+    publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
+    isPinned: false,
+    featuredImage: '/api/placeholder/800/400',
+    createdAt: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '4',
+    title: 'Tourism Industry Shows Strong Recovery Post-Pandemic',
+    slug: 'tourism-industry-strong-recovery-post-pandemic',
+    excerpt: 'Recent statistics show a remarkable recovery in Dominica\'s tourism sector, with visitor numbers approaching pre-pandemic levels.',
+    content: '<p>The Dominican tourism industry is experiencing a robust recovery following the challenges of the global pandemic...</p><p>Hotel occupancy rates have increased significantly, and new tourism initiatives are attracting visitors from around the world.</p>',
+    category: mockCategories[0], // Politics/Economy
+    author: mockAuthors[1],
+    status: 'draft',
+    publishedAt: null,
+    isPinned: false,
+    featuredImage: '/api/placeholder/800/400',
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: '5',
+    title: 'Local School Wins National Science Competition',
+    slug: 'local-school-wins-national-science-competition',
+    excerpt: 'Students from Roseau Primary School have achieved first place in the national science fair with their innovative environmental project.',
+    content: '<p>In an impressive display of scientific innovation, students from Roseau Primary School have won the national science competition...</p><p>Their project focused on sustainable energy solutions and environmental conservation, earning praise from judges and educators alike.</p>',
+    category: mockCategories[1], // Local News
+    author: mockAuthors[0],
+    status: 'published',
+    publishedAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(), // 18 hours ago
+    isPinned: false,
+    featuredImage: '/api/placeholder/800/400',
+    createdAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
   },
 ];
 
@@ -286,17 +347,74 @@ export const fallbackService = {
       data,
     });
   },
+
+  // Authentication fallback for demo mode
+  login: (credentials: any): Promise<any> => {
+    // Demo login - accept any credentials
+    const demoUser = {
+      id: 'demo_admin_1',
+      email: credentials.email || 'admin@dominicanews.dm',
+      fullName: 'Demo Administrator',
+      role: 'admin',
+      createdAt: new Date().toISOString()
+    };
+    
+    const demoToken = 'demo_token_' + Date.now();
+    
+    return Promise.resolve({
+      success: true,
+      message: 'Demo login successful - you are now in admin demo mode',
+      data: {
+        user: demoUser,
+        token: demoToken
+      }
+    });
+  },
+
+  getCurrentUser: (): Promise<any> => {
+    const demoUser = {
+      id: 'demo_admin_1',
+      email: 'admin@dominicanews.dm',
+      fullName: 'Demo Administrator',
+      role: 'admin',
+      createdAt: new Date().toISOString()
+    };
+    
+    return Promise.resolve({
+      success: true,
+      message: 'Demo user retrieved',
+      data: { user: demoUser }
+    });
+  },
+
+  logout: (): Promise<any> => {
+    return Promise.resolve({
+      success: true,
+      message: 'Demo logout successful',
+      data: {}
+    });
+  },
 };
 
 // Helper function to check if we should use fallback data
 export const shouldUseFallback = (error: any): boolean => {
+  // Always use fallback for network errors (no response)
+  if (!error?.response) {
+    return true;
+  }
+  
   // Use fallback for 404 errors on admin endpoints
   if (error?.response?.status === 404 && error?.config?.url?.includes('/admin/')) {
     return true;
   }
   
-  // Use fallback for network errors in development
-  if (!error?.response && process.env.NODE_ENV === 'development') {
+  // Use fallback for auth endpoints when backend is unavailable
+  if (error?.config?.url?.includes('/auth/')) {
+    return true;
+  }
+  
+  // Use fallback for 500+ server errors
+  if (error?.response?.status >= 500) {
     return true;
   }
   

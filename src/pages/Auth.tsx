@@ -197,6 +197,22 @@ const Auth = () => {
                       : "Sign In"}
                   </Button>
                 </form>
+
+                {/* Demo Login Button */}
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-sm text-muted-foreground text-center mb-2">
+                    Try the demo admin panel:
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleLogin({ email: 'demo@admin.com', password: 'demo123' })}
+                    disabled={authLoading}
+                  >
+                    🔧 Demo Admin Login
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

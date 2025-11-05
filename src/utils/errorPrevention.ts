@@ -11,9 +11,9 @@ interface ErrorTracker {
 
 class ErrorPreventionService {
   private errorTrackers = new Map<string, ErrorTracker>();
-  private readonly ERROR_THRESHOLD = 3; // Max errors per type before suppression
-  private readonly SUPPRESSION_WINDOW = 60000; // 1 minute
-  private readonly RESET_WINDOW = 300000; // 5 minutes
+  private readonly ERROR_THRESHOLD = 1; // Max errors per type before suppression (reduced from 3)
+  private readonly SUPPRESSION_WINDOW = 30000; // 30 seconds (reduced from 1 minute)
+  private readonly RESET_WINDOW = 120000; // 2 minutes (reduced from 5 minutes)
 
   /**
    * Check if an error should be suppressed to prevent spam

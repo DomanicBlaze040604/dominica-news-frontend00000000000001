@@ -51,24 +51,44 @@ export interface RefreshTokenResponse {
   };
 }
 
+import { fallbackService, withFallback } from './fallbackData';
+
 // Authentication API calls
 export const authService = {
   // Login user
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    return response.data;
+    return withFallback(
+      async () => {
+        const response = await api.post<AuthResponse>('/auth/login', credentials);
+        return response.data;
+      },
+      () => fallbackService.login(credentials),
+      { enableFallback: true, logFallback: true }
+    );
   },
 
   // Register user
   register: async (userData: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', userData);
-    return response.data;
+    return withFallback(
+      async () => {
+        const response = await api.post<AuthResponse>('/auth/register', userData);
+        return response.data;
+      },
+      () => fallbackService.login(userData), // Use login fallback for register too
+      { enableFallback: true, logFallback: true }
+    );
   },
 
   // Get current user
   getCurrentUser: async (): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.get<ApiResponse<{ user: User }>>('/auth/me');
-    return response.data;
+    return withFallback(
+      async () => {
+        const response = await api.get<ApiResponse<{ user: User }>>('/auth/me');
+        return response.data;
+      },
+      () => fallbackService.getCurrentUser(),
+      { enableFallback: true, logFallback: true }
+    );
   },
 
   // Refresh access token
@@ -79,14 +99,26 @@ export const authService = {
 
   // Logout user
   logout: async (): Promise<ApiResponse<{}>> => {
-    const response = await api.post<ApiResponse<{}>>('/auth/logout');
-    return response.data;
+    return withFallback(
+      async () => {
+        const response = await api.post<ApiResponse<{}>>('/auth/logout');
+        return response.data;
+      },
+      () => fallbackService.logout(),
+      { enableFallback: true, logFallback: true }
+    );
   },
 
   // Logout from all devices
   logoutAll: async (): Promise<ApiResponse<{}>> => {
-    const response = await api.post<ApiResponse<{}>>('/auth/logout-all');
-    return response.data;
+    return withFallback(
+      async () => {
+        const response = await api.post<ApiResponse<{}>>('/auth/logout-all');
+        return response.data;
+      },
+      () => fallbackService.logout(),
+      { enableFallback: true, logFallback: true }
+    );
   },
 
   // Change password
@@ -119,6 +151,11 @@ export const tokenService = {
   isTokenValid: (): boolean => {
     const token = tokenService.getToken();
     if (!token) return false;
+
+    // Handle demo tokens
+    if (token.startsWith('demo_token_')) {
+      return true;
+    }
 
     try {
       // Basic JWT token validation (check if it's not expired)

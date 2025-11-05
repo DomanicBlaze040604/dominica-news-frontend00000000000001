@@ -54,8 +54,8 @@ function initializeProductionFeatures(): void {
     console.error = originalConsole.error;
   }
 
-  // Set up service worker for caching (if available)
-  if ('serviceWorker' in navigator) {
+  // Set up service worker for caching (if available and enabled)
+  if (config.features.serviceWorker && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then(registration => {

@@ -205,10 +205,11 @@ apiClient.interceptors.response.use(
         console.log(`Retrying request (${retryCount}/${maxRetries}) after ${Math.round(delay)}ms...`);
       }
       
-      // Only show retry toast for user-initiated actions, not background requests
+      // Only show retry toast for user-initiated actions, not background requests, and not too frequently
       const endpoint = originalRequest?.metadata?.endpoint || originalRequest?.url || '';
-      if (!endpoint.includes('/health') && !endpoint.includes('/status')) {
-        toast.info(`Connection failed. Retrying... (${retryCount}/${maxRetries})`);
+      if (!endpoint.includes('/health') && !endpoint.includes('/status') && retryCount === 1) {
+        // Only show retry toast on first retry to avoid spam
+        toast.info(`Connection issue detected. Retrying automatically...`);
       }
       
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -228,10 +229,10 @@ apiClient.interceptors.response.use(
         console.log(`Server error, retrying (${retryCount}/${maxRetries}) after ${delay}ms...`);
       }
       
-      // Only show server error toast for user-initiated actions
+      // Only show server error toast for user-initiated actions, and only once
       const endpoint = originalRequest?.metadata?.endpoint || originalRequest?.url || '';
-      if (!endpoint.includes('/health') && !endpoint.includes('/status')) {
-        toast.error(`Server error. Retrying... (${retryCount}/${maxRetries})`);
+      if (!endpoint.includes('/health') && !endpoint.includes('/status') && retryCount === 1) {
+        toast.error(`Server issue detected. Retrying automatically...`);
       }
       
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -245,21 +246,37 @@ apiClient.interceptors.response.use(
     const endpoint = originalRequest?.metadata?.endpoint || originalRequest?.url || '';
     const isBackgroundRequest = endpoint.includes('/health') || endpoint.includes('/status') || endpoint.includes('/heartbeat');
     
+    // Much more conservative error toasting - only show critical errors
     if (!error.response && !isBackgroundRequest) {
-      (error as any).message = 'Network error. Please check your internet connection.';
-      toast.error('Network error. Please check your internet connection.');
+      // Only show network error toast once per 5 minutes to prevent spam
+      const lastNetworkErrorToast = localStorage.getItem('lastNetworkErrorToast');
+      const now = Date.now();
+      if (!lastNetworkErrorToast || now - parseInt(lastNetworkErrorToast) > 300000) { // 5 minutes
+        localStorage.setItem('lastNetworkErrorToast', now.toString());
+        (error as any).message = 'Network connection issue. Using cached data when available.';
+        toast.error('Network connection issue. Using cached data when available.');
+      }
     } else if (error.response?.status >= 500 && !isBackgroundRequest) {
-      // Only show server error toast once per minute to prevent spam
+      // Only show server error toast once per 5 minutes to prevent spam
       const lastServerErrorToast = localStorage.getItem('lastServerErrorToast');
       const now = Date.now();
-      if (!lastServerErrorToast || now - parseInt(lastServerErrorToast) > 60000) {
+      if (!lastServerErrorToast || now - parseInt(lastServerErrorToast) > 300000) { // 5 minutes
         localStorage.setItem('lastServerErrorToast', now.toString());
-        toast.error('Server error. Please try again later.');
+        toast.error('Server temporarily unavailable. Using cached data when available.');
       }
     } else if (error.response?.status >= 400 && error.response.status < 500 && !isBackgroundRequest) {
       const errorMessage = (error as any).response?.data?.error || (error as any).response?.data?.message || 'Request failed';
-      if (!errorMessage.includes('Session expired') && !errorMessage.includes('Access denied') && !errorMessage.includes('Not found')) {
-        toast.error(errorMessage);
+      // Only show client errors that are actionable, and not too frequently
+      if (!errorMessage.includes('Session expired') && 
+          !errorMessage.includes('Access denied') && 
+          !errorMessage.includes('Not found') &&
+          !errorMessage.includes('Rate limit')) {
+        const lastClientErrorToast = localStorage.getItem('lastClientErrorToast');
+        const now = Date.now();
+        if (!lastClientErrorToast || now - parseInt(lastClientErrorToast) > 60000) { // 1 minute
+          localStorage.setItem('lastClientErrorToast', now.toString());
+          toast.error(errorMessage);
+        }
       }
     }
     
