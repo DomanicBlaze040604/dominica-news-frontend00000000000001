@@ -196,9 +196,9 @@ function createEnvironmentConfig(): EnvironmentConfig {
     
     // API Configuration
     apiBaseUrl: getApiBaseUrl(),
-    apiTimeout: getNumberEnv('VITE_API_TIMEOUT', 15000),
-    apiRetryAttempts: getNumberEnv('VITE_API_RETRY_ATTEMPTS', environment === 'production' ? 3 : 1),
-    apiRetryDelay: getNumberEnv('VITE_API_RETRY_DELAY', environment === 'production' ? 1000 : 500),
+    apiTimeout: getNumberEnv('VITE_API_TIMEOUT', 60000), // Increased to 60 seconds
+    apiRetryAttempts: getNumberEnv('VITE_API_RETRY_ATTEMPTS', environment === 'production' ? 5 : 3), // More retries
+    apiRetryDelay: getNumberEnv('VITE_API_RETRY_DELAY', environment === 'production' ? 2000 : 1000), // Longer delay
     
     // Feature flags
     features: {

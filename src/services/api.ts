@@ -48,7 +48,13 @@ const apiClient: AxiosInstance = axios.create({
   timeout: config.apiTimeout,
   headers: {
     'Content-Type': 'application/json',
+    'Keep-Alive': 'timeout=5, max=1000',
+    'Connection': 'keep-alive',
   },
+  // Improve connection handling
+  maxRedirects: 5,
+  maxContentLength: 50 * 1024 * 1024, // 50MB
+  maxBodyLength: 50 * 1024 * 1024, // 50MB
 });
 
 // Note: Token refresh functionality removed to simplify error handling

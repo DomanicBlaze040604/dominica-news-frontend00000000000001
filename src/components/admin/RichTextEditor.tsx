@@ -14,7 +14,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import Underline from '@tiptap/extension-underline';
 import CodeBlock from '@tiptap/extension-code-block';
 import Blockquote from '@tiptap/extension-blockquote';
-import History from '@tiptap/extension-history';
+// Removed separate History import - StarterKit already includes it
 import Dropcursor from '@tiptap/extension-dropcursor';
 import Gapcursor from '@tiptap/extension-gapcursor';
 import { Button } from '@/components/ui/button';
@@ -87,9 +87,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         // Disable conflicting extensions from StarterKit
         dropcursor: false,
         gapcursor: false,
-      }),
-      History.configure({
-        depth: 100,
+        // Configure history within StarterKit to avoid conflicts
+        history: {
+          depth: 100,
+          newGroupDelay: 1000, // Group edits within 1 second
+        },
       }),
       Underline,
       TextAlign.configure({
