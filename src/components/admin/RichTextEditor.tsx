@@ -87,11 +87,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         // Disable conflicting extensions from StarterKit
         dropcursor: false,
         gapcursor: false,
-        // Configure history within StarterKit to avoid conflicts
-        history: {
-          depth: 100,
-          newGroupDelay: 1000, // Group edits within 1 second
-        },
+        // StarterKit includes History by default with good settings
       }),
       Underline,
       TextAlign.configure({
